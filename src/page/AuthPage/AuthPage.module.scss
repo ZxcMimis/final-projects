@@ -1,0 +1,57 @@
+@import '../../styles/variables';
+
+.authPageContainer {
+  display: flex;
+  min-height: 100vh;
+  background-color: $color-bg; 
+  /* Імітація вертикальних смуг з макету (можна прибрати, якщо будеш ставити картинку) */
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent,
+    transparent 110px,
+    rgba(255, 255, 255, 0.4) 110px,
+    rgba(255, 255, 255, 0.4) 111px
+  );
+  font-family: $font-family-main;
+}
+
+.brandSection {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.logoGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -50px; 
+}
+
+.mainTitle {
+  font-size: 78px;
+  font-weight: 900;
+  color: $color-text-black;
+  margin: 0;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.subTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: $color-text-main;
+  letter-spacing: 0.22em; 
+  margin: 10px 0 0 0;
+  text-transform: uppercase;
+}
+
+.formSection {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
