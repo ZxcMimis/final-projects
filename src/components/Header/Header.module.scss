@@ -1,0 +1,104 @@
+@import '../../Styles/variables'; 
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 64px;
+  background: $color-white;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  font-family: $font-family-main;
+
+  &__logo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 12px; 
+
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      background: $color-primary;
+      border-radius: 8px;
+      z-index: 0;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: -4px;
+      top: 40%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      background: rgba(255, 117, 29, 0.2);
+      border-radius: 8px;
+      z-index: 0;
+    }
+
+    &-text {
+      color: $color-text-black; 
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: 0.5px;
+      position: relative;
+      z-index: 1;
+    }
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: 16px; 
+  }
+
+  &__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: $color-secondary;
+    color: $color-text-main;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  &__username {
+    color: $color-text-light;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  // Вертикальная линия разделителя
+  &__divider {
+    width: 1px;
+    height: 24px;
+    background-color: #e0e5eb;
+  }
+
+  &__logout {
+    background: transparent;
+    border: none;
+    color: $color-text-light;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 0;
+    cursor: pointer;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: $color-primary;
+    }
+  }
+}

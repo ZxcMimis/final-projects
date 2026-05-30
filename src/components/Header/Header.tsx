@@ -1,20 +1,28 @@
+import React from 'react';
 import styles from './Header.module.scss';
 
-export const Header = () => {
+interface HeaderProps {
+  username?: string;
+  onLogout?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ username = 'User Name', onLogout }) => {
   return (
     <header className={styles.header}>
-      <div className={styles.logoContainer}>
-        {/* Маленька помаранчева іконка з макета */}
-        <div className={styles.iconPlaceholder}></div> 
-        <span className={styles.logoText}>INVESTIQ</span>
+      <div className={styles.header__logo}>
+        <span className={styles['header__logo-text']}>INVESTIQ</span>
       </div>
-
-      <div className={styles.userContainer}>
-        <div className={styles.avatar}>U</div>
-        <span className={styles.userName}>User Name</span>
-        <div className={styles.divider}></div>
-        <button className={styles.logoutBtn}>Вийти</button>
+      
+      <div className={styles.header__user}>
+        <div className={styles.header__avatar}>{username.charAt(0).toUpperCase()}</div>
+        <span className={styles.header__username}>{username}</span>
+        
+        <div className={styles.header__divider}></div>
+        
+        <button className={styles.header__logout} onClick={onLogout}>Вийти</button>
       </div>
     </header>
   );
 };
+
+export default Header;

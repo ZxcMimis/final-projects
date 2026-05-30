@@ -1,0 +1,90 @@
+@import '../../../Styles/variables';
+
+.balance {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  font-family: $font-family-main;
+
+  &__label {
+    color: $color-text-main;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  &__input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: $color-white;
+    border: 1.5px solid #e0e5eb;
+    border-radius: $radius-input;
+    padding: 8px 16px;
+    min-width: 130px;
+  }
+
+  &__input {
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    color: $color-text-main;
+    width: 80px;
+    background: transparent;
+    &::-webkit-inner-spin-button { -webkit-appearance: none; }
+  }
+
+  &__currency {
+    font-size: 12px;
+    color: $color-text-main;
+    font-weight: 800;
+  }
+
+  &__confirm {
+    background: transparent;
+    border: 1.5px solid #e0e5eb;
+    border-radius: $radius-btn;
+    padding: 8px 24px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: $color-text-light;
+    transition: all 0.3s ease;
+    cursor: pointer;
+
+    &:hover {
+      border-color: $color-primary;
+      color: $color-primary;
+    }
+  }
+
+  &__tooltip {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-40%);
+    background: #0d162a;
+    color: $color-white;
+    padding: 16px 20px;
+    border-radius: $radius-card;
+    font-size: 13px;
+    line-height: 1.5;
+    width: 260px;
+    z-index: 50;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -7px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 0 7px 7px;
+      border-style: solid;
+      border-color: transparent transparent #0d162a;
+    }
+
+    p + p { margin-top: 8px; }
+    strong { color: $color-primary; }
+  }
+}
