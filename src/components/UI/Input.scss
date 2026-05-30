@@ -1,0 +1,40 @@
+@import '../../Styles/variables';
+
+.ui-input {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &__label {
+    font-size: 12px;
+    font-weight: 600;
+    color: $color-muted;
+  }
+
+  &__field {
+    padding: 10px 14px;
+    border: 1.5px solid $color-border;
+    border-radius: $radius-md;
+    font-size: 13px;
+    font-weight: 500;
+    color: $color-text;
+    background: $color-white;
+    transition: border-color $transition, box-shadow $transition;
+
+    &::placeholder { color: $color-muted; }
+    &:focus {
+      border-color: $color-orange;
+      box-shadow: 0 0 0 3px rgba($color-orange, 0.12);
+    }
+  }
+
+  &--error &__field {
+    border-color: $color-danger;
+  }
+
+  &__error {
+    font-size: 11px;
+    color: $color-danger;
+    font-weight: 600;
+  }
+}

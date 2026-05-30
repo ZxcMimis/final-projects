@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import styles from './Balance.module.scss';
+import React, { useState, useRef, useEffect } from 'react';
+import './Balance.scss';
 
 interface BalanceProps {
   balance: number;
@@ -8,38 +8,70 @@ interface BalanceProps {
   onTooltipClose?: () => void;
 }
 
-const Balance: React.FC<BalanceProps> = ({ balance, onConfirm, showTooltip, onTooltipClose }) => {
-  const [inputValue, setInputValue] = useState(balance.toFixed(2));
+const Balance: React.FC<BalanceProps> = ({
+  balance,
+  onConfirm,
+  showTooltip,
+  onTooltipClose,
+}) => {
+  const [editing, setEditing] = useState(false);
+  const [inputVal, setInputVal] = useState(String(balance));
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleConfirm = () => {
-    const parsed = parseFloat(inputValue);
-    if (!isNaN(parsed)) {
-      onConfirm(parsed);
+
+  const handleConfirmClick = () => {
+    if (editing) {
+      const v = parseFloat(inputVal);
+      if (!isNaN(v)) onConfirm(v);
+      setEditing(false);
       onTooltipClose?.();
+    } else {
+      setInputVal(String(balance));
+      setEditing(true);
     }
   };
 
-  return (
-    <div className={styles.balance}>
-      <span className={styles.balance__label}>Баланс:</span>
-      <div className={styles['balance__input-wrap']}>
-        <input
-          className={styles.balance__input}
-          type="text"
-          inputMode="decimal"
-          value={inputValue}
-          onChange={e => setInputValue(e.target.value)}
-        />
-        <span className={styles.balance__currency}>UAH</span>
-      </div>
-      <button className={styles.balance__confirm} onClick={handleConfirm}>
-        ПІДТВЕРДИТИ
-      </button>
+  useEffect(() => {
+    if (editing) inputRef.current?.focus();
+  }, [editing]);
 
-      {showTooltip && (
-        <div className={styles.balance__tooltip}>
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleConfirmClick();
+    if (e.key === 'Escape') setEditing(false);
+  };
+
+  const formatted = balance.toLocaleString('uk-UA', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  return (
+    <div className="balance">
+      <div className="balance__frame">
+        <span className="balance__label">Баланс:</span>
+        <span className="balance__value">{formatted} UAH</span>
+        <button className="balance__confirm" onClick={handleConfirmClick}>
+          ПІДТВЕРДИТИ
+        </button>
+      </div>
+
+      {editing && (
+        <input
+          ref={inputRef}
+          className="balance__edit"
+          type="number"
+          value={inputVal}
+          onChange={e => setInputVal(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Введіть баланс"
+        />
+      )}
+
+      {showTooltip && !editing && (
+        <div className="balance__tooltip">
           <p>
-            <strong>Привіт!</strong> Для початку роботи внесіть свій поточний баланс рахунку!
+            <strong>Привіт!</strong> Для початку роботи внесіть свій поточний
+            баланс рахунку!
           </p>
           <p>Ви не можете витрачати гроші, поки їх у Вас немає :)</p>
         </div>

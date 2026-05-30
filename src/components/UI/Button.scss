@@ -1,0 +1,43 @@
+@import '../../Styles/variables';
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 22px;
+  border-radius: $radius-md;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: background $transition, color $transition, border-color $transition;
+
+  &--primary {
+    background: $color-orange;
+    color: $color-white;
+    &:hover { background: $color-orange-hover; }
+  }
+
+  &--secondary {
+    background: transparent;
+    color: $color-muted;
+    border: 1.5px solid $color-border;
+    &:hover { border-color: $color-orange; color: $color-orange; }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: $color-muted;
+    &:hover { color: $color-text; }
+  }
+
+  &--danger {
+    background: transparent;
+    color: $color-muted;
+    border: 1.5px solid $color-border;
+    &:hover { border-color: $color-danger; color: $color-danger; }
+  }
+}

@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './TransactionTable.module.scss';
+import './TransactionTable.scss';
 
 export interface Transaction {
   id: string;
@@ -12,45 +12,47 @@ export interface Transaction {
 
 interface TransactionTableProps {
   transactions: Transaction[];
+  onDelete?: (id: string) => void;
 }
 
-const TransactionTable: React.FC<TransactionTableProps> = ({ transactions }) => {
-  return (
-    <div className={styles['txn-table']}>
+const EMPTY_ROWS = 5;
 
-      <div className={styles['txn-table__header']}>
+const TransactionTable: React.FC<TransactionTableProps> = ({ transactions, onDelete }) => {
+  return (
+    <div className="txn-table">
+      <div className="txn-table__head">
         <span>ДАТА</span>
         <span>ОПИС</span>
         <span>КАТЕГОРІЯ</span>
         <span>СУМА</span>
+        <span />
       </div>
 
-
-      <div className={styles['txn-table__body']}>
-
-        {transactions.length === 0 && (
-          <div className={styles['txn-table__body-empty-scroll']} />
-        )}
-
-        {transactions.length === 0 ? (
-
-          Array.from({ length: 9 }).map((_, i) => (
-            <div key={i} className={`${styles['txn-table__row']} ${styles['txn-table__row--empty']}`} />
-          ))
-        ) : (
-
-          transactions.map(txn => (
-            <div key={txn.id} className={styles['txn-table__row']}>
-              <span className={styles['txn-table__date']}>{txn.date}</span>
-              <span className={styles['txn-table__desc']}>{txn.description}</span>
-              <span className={styles['txn-table__category']}>{txn.category}</span>
-              <span className={`${styles['txn-table__amount']} ${styles[`txn-table__amount--${txn.type}`]}`}>
-                {txn.type === 'expense' ? '-' : '+'}
-                {txn.amount.toFixed(2)}
-              </span>
-            </div>
-          ))
-        )}
+      <div className="txn-table__body">
+        {transactions.length === 0
+          ? Array.from({ length: EMPTY_ROWS }).map((_, i) => (
+              <div key={i} className="txn-table__row txn-table__row--empty" />
+            ))
+          : transactions.map(txn => (
+              <div key={txn.id} className="txn-table__row">
+                <span className="txn-table__date">{txn.date}</span>
+                <span className="txn-table__desc">{txn.description}</span>
+                <span className="txn-table__cat">{txn.category || '—'}</span>
+                <span className={`txn-table__amount txn-table__amount--${txn.type}`}>
+                  {txn.type === 'expense' ? '- ' : '+ '}
+                  {txn.amount.toFixed(2)} грн.
+                </span>
+                {onDelete && (
+                  <button
+                    className="txn-table__del"
+                    onClick={() => onDelete(txn.id)}
+                    title="Видалити"
+                  >
+                    🗑
+                  </button>
+                )}
+              </div>
+            ))}
       </div>
     </div>
   );

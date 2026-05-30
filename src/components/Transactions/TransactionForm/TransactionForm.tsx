@@ -1,67 +1,103 @@
 import React, { useState } from 'react';
-import styles from './TransactionForm.module.scss';
+import './TransactionForm.scss';
 
-interface TransactionFormProps {
-  onSubmit: (data: { date: string; description: string; category: string; amount: number }) => void;
-  onClear: () => void;
-  categories: string[];
+interface FormData {
+  date: string;
+  description: string;
+  category: string;
+  amount: number;
 }
 
-const TransactionForm: React.FC<TransactionFormProps> = ({ onSubmit, onClear, categories }) => {
-  const [date, setDate] = useState('21.11.2019');
+interface TransactionFormProps {
+  currentDate?: string;
+  categories?: string[];
+  onSubmit: (data: FormData) => void;
+  onClear: () => void;
+}
+
+const DEFAULT_CATEGORIES = [
+  'Продукти',
+  'Транспорт',
+  'Комунальні',
+  'Розваги',
+  "Здоров'я",
+  'Одяг',
+  'Інше',
+];
+
+const TransactionForm: React.FC<TransactionFormProps> = ({
+  currentDate = '21.11.2019',
+  categories = DEFAULT_CATEGORIES,
+  onSubmit,
+  onClear,
+}) => {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
 
   const handleSubmit = () => {
-    if (!description || !amount) return;
-    onSubmit({ date, description, category, amount: parseFloat(amount) });
+    const parsed = parseFloat(amount);
+    if (!description.trim() || isNaN(parsed) || parsed <= 0) return;
+    onSubmit({ date: currentDate, description: description.trim(), category, amount: parsed });
     setDescription('');
     setCategory('');
     setAmount('');
   };
 
   return (
-    <div className={styles['txn-form']}>
-      <div className={styles['txn-form__date']}>
-        <span className={styles['txn-form__date-icon']}>📅</span>
-        <input
-          type="text"
-          value={date}
-          onChange={e => setDate(e.target.value)}
-          className={styles['txn-form__date-input']}
-        />
+    <div className="txn-form">
+      <div className="txn-form__date">
+        <span className="txn-form__date-icon">🗓</span>
+        <span className="txn-form__date-text">{currentDate}</span>
       </div>
 
-      <input
-        type="text"
-        className={styles['txn-form__desc']}
-        placeholder="Опис товару"
-        value={description}
-        onChange={e => setDescription(e.target.value)}
-      />
+      <div className="txn-form__fields">
+        <input
+          className="txn-form__desc"
+          type="text"
+          placeholder="Опис товару"
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+        />
 
-      <select
-        className={styles['txn-form__category']}
-        value={category}
-        onChange={e => setCategory(e.target.value)}
-      >
-        <option value="">Категорія</option>
-        {categories.map(c => (
-          <option key={c} value={c}>{c}</option>
-        ))}
-      </select>
+        <div className="txn-form__sep" />
 
-      <input
-        type="number"
-        className={styles['txn-form__amount']}
-        placeholder="Сума"
-        value={amount}
-        onChange={e => setAmount(e.target.value)}
-      />
+        <div className="txn-form__cat-wrap">
+          <select
+            className="txn-form__cat"
+            value={category}
+            onChange={e => setCategory(e.target.value)}
+          >
+            <option value="">Категорія товару</option>
+            {categories.map(c => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+          <span className="txn-form__cat-arrow">▾</span>
+        </div>
 
-      <button className={styles['txn-form__submit']} onClick={handleSubmit}>ВВЕСТИ</button>
-      <button className={styles['txn-form__clear']} onClick={onClear}>ОЧИСТИТИ</button>
+        <div className="txn-form__sep" />
+
+        <div className="txn-form__amt-wrap">
+          <input
+            className="txn-form__amt"
+            type="number"
+            placeholder="0,00"
+            value={amount}
+            onChange={e => setAmount(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+          />
+          <span className="txn-form__calc">🖩</span>
+        </div>
+      </div>
+
+      <button className="txn-form__submit" onClick={handleSubmit}>
+        ВВЕСТИ
+      </button>
+      <button className="txn-form__clear" onClick={onClear}>
+        ОЧИСТИТИ
+      </button>
     </div>
   );
 };

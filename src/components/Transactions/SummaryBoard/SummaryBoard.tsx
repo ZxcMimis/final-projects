@@ -1,41 +1,35 @@
 import React from 'react';
-import styles from './SummaryBoard.module.scss';
+import './SummaryBoard.scss';
 
-interface SummaryBoardProps {
-  totalExpense: number;
-  totalIncome: number;
-  balance: number;
+export interface MonthSummary {
+  month: string; 
+  value: number;
 }
 
-const SummaryBoard: React.FC<SummaryBoardProps> = ({ totalExpense, totalIncome, balance }) => {
+interface SummaryBoardProps {
+  months: MonthSummary[];
+}
+
+const SummaryBoard: React.FC<SummaryBoardProps> = ({ months }) => {
   return (
-    <div className={styles.summary}>
-      <h3 className={styles.summary__title}>ЗВЕДЕННЯ</h3>
-      
-      <div className={styles.summary__content}>
-        <div className={styles.summary__item}>
-          <span className={styles['summary__item-label']}>Доходи:</span>
-          <span className={`${styles['summary__item-value']} ${styles['summary__item-value--income']}`}>
-            +{totalIncome.toFixed(2)} UAH
-          </span>
-        </div>
-
-        <div className={styles.summary__item}>
-          <span className={styles['summary__item-label']}>Витрати:</span>
-          <span className={`${styles['summary__item-value']} ${styles['summary__item-value--expense']}`}>
-            -{totalExpense.toFixed(2)} UAH
-          </span>
-        </div>
-
-        <div className={styles.summary__divider}></div>
-
-        <div className={`${styles.summary__item} ${styles['summary__item--total']}`}>
-          <span className={styles['summary__item-label']}>Залишок:</span>
-          <span className={styles['summary__item-value']}>
-            {balance.toFixed(2)} UAH
-          </span>
-        </div>
+    <div className="summary">
+      <div className="summary__head">
+        <span className="summary__title">ЗВЕДЕННЯ</span>
       </div>
+
+      <ul className="summary__list">
+        {months.map(item => (
+          <li key={item.month} className="summary__row">
+            <span className="summary__month">{item.month}</span>
+            <span className="summary__value">
+              {item.value.toLocaleString('uk-UA', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

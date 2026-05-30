@@ -1,6 +1,7 @@
 import './App.css'
+import './Styles/reset.scss';
 import { AuthPage } from './page/AuthPage/AuthPage';
-import { DashboardPage } from './page/DashboardPage/DashboardPage';
+import DashboardPage from './page/DashboardPage/DashboardPage';
 
 
 

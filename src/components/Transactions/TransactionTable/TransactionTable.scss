@@ -1,0 +1,86 @@
+@import '../../../Styles/variables';
+
+.txn-table {
+  flex: 1;
+  min-width: 0;
+
+  border-left: 3.5px solid $color-orange;
+
+  &__head {
+    display: grid;
+    grid-template-columns: 110px 1fr 150px 140px 40px;
+    gap: 0;
+    padding: 10px 20px;
+    background: $color-bg;
+    border-bottom: 1px solid $color-border;
+
+    span {
+      font-size: 10px;
+      font-weight: 800;
+      color: $color-muted;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+  }
+
+ 
+
+  &__row {
+    display: grid;
+    grid-template-columns: 110px 1fr 150px 140px 40px;
+    padding: 12px 20px;
+    border-bottom: 1px solid $color-border;
+    align-items: center;
+    min-height: 46px;
+    transition: background $transition;
+
+    &:hover:not(&--empty) {
+      background: rgba($color-orange, 0.03);
+    }
+
+    &--empty {
+      background: transparent;
+    }
+  }
+
+  &__date {
+    font-size: 12px;
+    color: $color-muted;
+    font-weight: 500;
+  }
+
+  &__desc {
+    font-size: 13px;
+    color: $color-text;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__cat {
+    font-size: 13px;
+    color: $color-muted;
+  }
+
+  &__amount {
+    font-size: 13px;
+    font-weight: 700;
+
+    &--expense { color: $color-danger; }
+    &--income  { color: $color-success; }
+  }
+
+  &__del {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: $color-muted;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: color $transition;
+
+    &:hover { color: $color-danger; }
+  }
+}

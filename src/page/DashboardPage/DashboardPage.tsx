@@ -1,17 +1,31 @@
 import React, { useState } from 'react';
 import styles from './DashboardPage.module.scss';
-import Header from '../../components/Header/Header'
+
+import Header from '../../components/Header/Header';
 import Balance from '../../components/Transactions/Balance/Balance';
 import TransactionForm from '../../components/Transactions/TransactionForm/TransactionForm';
-import TransactionTable, {type Transaction } from '../../components/Transactions/TransactionTable/TransactionTable';
-import SummaryBoard from '../../components/Transactions/SummaryBoard/SummaryBoard';
+import TransactionTable, {
+  type Transaction,
+} from '../../components/Transactions/TransactionTable/TransactionTable';
+import SummaryBoard, {
+  type MonthSummary,
+} from '../../components/Transactions/SummaryBoard/SummaryBoard';
 
-const CATEGORIES = ['Їжа', 'Транспорт', 'Комунальні', 'Розваги', 'Здоров\'я', 'Одяг', 'Інше'];
+type TabType = 'expense' | 'income';
 
-export const DashboardPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'expense' | 'income'>('expense');
-  const [balance, setBalance] = useState(0);
-  const [showTooltip, setShowTooltip] = useState(true);
+const MONTH_SUMMARY: MonthSummary[] = [
+  { month: 'ЛИСТОПАД', value: 10000 },
+  { month: 'ЖОВТЕНЬ',  value: 30000 },
+  { month: 'ВЕРЕСЕНЬ', value: 30000 },
+  { month: 'СЕРПЕНЬ',  value: 20000 },
+  { month: 'ЛИПЕНЬ',   value: 15000 },
+  { month: 'ЧЕРВЕНЬ',  value: 18000 },
+];
+
+const DashboardPage: React.FC = () => {
+  const [balance, setBalance]           = useState(0);
+  const [showTooltip, setShowTooltip]   = useState(true);
+  const [activeTab, setActiveTab]       = useState<TabType>('expense');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const handleBalanceConfirm = (value: number) => {
@@ -26,76 +40,91 @@ export const DashboardPage: React.FC = () => {
     amount: number;
   }) => {
     const newTxn: Transaction = {
-      id: Date.now().toString(),
-      ...data,
+      id: String(Date.now()),
+      date: data.date,
+      description: data.description,
+      category: data.category,
+      amount: data.amount,
       type: activeTab,
     };
     setTransactions(prev => [newTxn, ...prev]);
     setBalance(prev =>
-      activeTab === 'expense' ? prev - data.amount : prev + data.amount
+      activeTab === 'income' ? prev + data.amount : prev - data.amount
     );
+  };
+
+  const handleDelete = (id: string) => {
+    const txn = transactions.find(t => t.id === id);
+    if (txn) {
+      setBalance(prev =>
+        txn.type === 'income' ? prev - txn.amount : prev + txn.amount
+      );
+    }
+    setTransactions(prev => prev.filter(t => t.id !== id));
   };
 
   const handleClear = () => setTransactions([]);
 
   const filtered = transactions.filter(t => t.type === activeTab);
-  const totalExpense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
-  const totalIncome = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
 
   return (
     <div className={styles.dashboard}>
       <Header username="User Name" />
 
-      <main className={styles.dashboard__main}>
-        <div className={styles.dashboard__topbar}>
+      <main className={styles.main}>
+        <div className={styles.topbar}>
           <Balance
             balance={balance}
             onConfirm={handleBalanceConfirm}
             showTooltip={showTooltip}
             onTooltipClose={() => setShowTooltip(false)}
           />
-          <button className={styles['dashboard__reports-btn']}>
-            Перейти до розрахунків
-            <span className={styles['dashboard__reports-icon']}>📊</span>
+          <button className={styles.reportsBtn}>
+            Перейти до розрахунків&nbsp;📊
           </button>
         </div>
 
-        <div className={styles.dashboard__tabs}>
-          <button
-            className={`${styles.dashboard__tab} ${activeTab === 'expense' ? styles['dashboard__tab--active'] : ''}`}
-            onClick={() => setActiveTab('expense')}
-          >
-            ВИТРАТИ
-          </button>
-          <button
-            className={`${styles.dashboard__tab} ${activeTab === 'income' ? styles['dashboard__tab--active'] : ''}`}
-            onClick={() => setActiveTab('income')}
-          >
-            ДОХІД
-          </button>
-        </div>
+        <div className={styles.card}>
 
-        <div className={styles.dashboard__card}>
+          <div className={styles.tabs}>
+            <button
+              className={`${styles.tab} ${activeTab === 'expense' ? styles.tabActive : ''}`}
+              onClick={() => setActiveTab('expense')}
+            >
+              Витрати
+            </button>
+            <button
+              className={`${styles.tab} ${activeTab === 'income' ? styles.tabActive : ''}`}
+              onClick={() => setActiveTab('income')}
+            >
+              Дохід
+            </button>
+          </div>
 
           <TransactionForm
             onSubmit={handleTransactionSubmit}
             onClear={handleClear}
-            categories={CATEGORIES}
           />
 
-          <div className={styles.dashboard__content}>
-            <TransactionTable transactions={filtered} />
-            <SummaryBoard
-              totalExpense={totalExpense}
-              totalIncome={totalIncome}
-              balance={balance}
+          <div className={styles.content}>
+            <TransactionTable
+              transactions={filtered}
+              onDelete={handleDelete}
             />
+            <SummaryBoard months={MONTH_SUMMARY} />
           </div>
         </div>
       </main>
 
-
+      <div className={styles.bgIcons} aria-hidden="true">
+        <span>💰</span>
+        <span>📈</span>
+        <span>💳</span>
+        <span>📊</span>
+        <span>💵</span>
+      </div>
     </div>
   );
 };
 
+export default DashboardPage;
