@@ -1,31 +1,31 @@
-import React, { useState } from 'react';
-import styles from './DashboardPage.module.scss';
+import React, { useState } from "react";
+import styles from "./DashboardPage.module.scss";
 
-import Header from '../../components/Header/Header';
-import Balance from '../../components/Transactions/Balance/Balance';
-import TransactionForm from '../../components/Transactions/TransactionForm/TransactionForm';
+import Header from "../../components/Header/Header";
+import Balance from "../../components/Transactions/Balance/Balance";
+import TransactionForm from "../../components/Transactions/TransactionForm/TransactionForm";
 import TransactionTable, {
   type Transaction,
-} from '../../components/Transactions/TransactionTable/TransactionTable';
+} from "../../components/Transactions/TransactionTable/TransactionTable";
 import SummaryBoard, {
   type MonthSummary,
-} from '../../components/Transactions/SummaryBoard/SummaryBoard';
+} from "../../components/Transactions/SummaryBoard/SummaryBoard";
 
-type TabType = 'expense' | 'income';
+type TabType = "expense" | "income";
 
 const MONTH_SUMMARY: MonthSummary[] = [
-  { month: 'ЛИСТОПАД', value: 10000 },
-  { month: 'ЖОВТЕНЬ',  value: 30000 },
-  { month: 'ВЕРЕСЕНЬ', value: 30000 },
-  { month: 'СЕРПЕНЬ',  value: 20000 },
-  { month: 'ЛИПЕНЬ',   value: 15000 },
-  { month: 'ЧЕРВЕНЬ',  value: 18000 },
+  { month: "ЛИСТОПАД", value: 10000 },
+  { month: "ЖОВТЕНЬ", value: 30000 },
+  { month: "ВЕРЕСЕНЬ", value: 30000 },
+  { month: "СЕРПЕНЬ", value: 20000 },
+  { month: "ЛИПЕНЬ", value: 15000 },
+  { month: "ЧЕРВЕНЬ", value: 18000 },
 ];
 
 const DashboardPage: React.FC = () => {
-  const [balance, setBalance]           = useState(0);
-  const [showTooltip, setShowTooltip]   = useState(true);
-  const [activeTab, setActiveTab]       = useState<TabType>('expense');
+  const [balance, setBalance] = useState(0);
+  const [showTooltip, setShowTooltip] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabType>("expense");
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const handleBalanceConfirm = (value: number) => {
@@ -47,25 +47,25 @@ const DashboardPage: React.FC = () => {
       amount: data.amount,
       type: activeTab,
     };
-    setTransactions(prev => [newTxn, ...prev]);
-    setBalance(prev =>
-      activeTab === 'income' ? prev + data.amount : prev - data.amount
+    setTransactions((prev) => [newTxn, ...prev]);
+    setBalance((prev) =>
+      activeTab === "income" ? prev + data.amount : prev - data.amount,
     );
   };
 
   const handleDelete = (id: string) => {
-    const txn = transactions.find(t => t.id === id);
+    const txn = transactions.find((t) => t.id === id);
     if (txn) {
-      setBalance(prev =>
-        txn.type === 'income' ? prev - txn.amount : prev + txn.amount
+      setBalance((prev) =>
+        txn.type === "income" ? prev - txn.amount : prev + txn.amount,
       );
     }
-    setTransactions(prev => prev.filter(t => t.id !== id));
+    setTransactions((prev) => prev.filter((t) => t.id !== id));
   };
 
   const handleClear = () => setTransactions([]);
 
-  const filtered = transactions.filter(t => t.type === activeTab);
+  const filtered = transactions.filter((t) => t.type === activeTab);
 
   return (
     <div className={styles.dashboard}>
@@ -85,17 +85,16 @@ const DashboardPage: React.FC = () => {
         </div>
 
         <div className={styles.card}>
-
           <div className={styles.tabs}>
             <button
-              className={`${styles.tab} ${activeTab === 'expense' ? styles.tabActive : ''}`}
-              onClick={() => setActiveTab('expense')}
+              className={`${styles.tab} ${activeTab === "expense" ? styles.tabActive : ""}`}
+              onClick={() => setActiveTab("expense")}
             >
               Витрати
             </button>
             <button
-              className={`${styles.tab} ${activeTab === 'income' ? styles.tabActive : ''}`}
-              onClick={() => setActiveTab('income')}
+              className={`${styles.tab} ${activeTab === "income" ? styles.tabActive : ""}`}
+              onClick={() => setActiveTab("income")}
             >
               Дохід
             </button>
@@ -107,22 +106,11 @@ const DashboardPage: React.FC = () => {
           />
 
           <div className={styles.content}>
-            <TransactionTable
-              transactions={filtered}
-              onDelete={handleDelete}
-            />
+            <TransactionTable transactions={filtered} onDelete={handleDelete} />
             <SummaryBoard months={MONTH_SUMMARY} />
           </div>
         </div>
       </main>
-
-      <div className={styles.bgIcons} aria-hidden="true">
-        <span>💰</span>
-        <span>📈</span>
-        <span>💳</span>
-        <span>📊</span>
-        <span>💵</span>
-      </div>
     </div>
   );
 };
