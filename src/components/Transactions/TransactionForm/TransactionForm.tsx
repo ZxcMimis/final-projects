@@ -1,19 +1,8 @@
 import React, { useState } from 'react';
 import './TransactionForm.scss';
+import { type TransactionFormProps } from './TransactionTable.types';
+import { type TransactionFormData } from './TransactionTable.types';
 
-interface FormData {
-  date: string;
-  description: string;
-  category: string;
-  amount: number;
-}
-
-interface TransactionFormProps {
-  currentDate?: string;
-  categories?: string[];
-  onSubmit: (data: FormData) => void;
-  onClear: () => void;
-}
 
 const DEFAULT_CATEGORIES = [
   'Продукти',

@@ -1,12 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Balance.scss';
+import { type BalanceProps } from './Balance.types';
 
-interface BalanceProps {
-  balance: number;
-  onConfirm: (value: number) => void;
-  showTooltip?: boolean;
-  onTooltipClose?: () => void;
-}
 
 const Balance: React.FC<BalanceProps> = ({
   balance,

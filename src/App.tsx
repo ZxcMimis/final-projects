@@ -1,6 +1,7 @@
 import './App.css'
 import './Styles/reset.scss';
 import { AuthPage } from './page/AuthPage/AuthPage';
+import ReportPage from './page/ReportsPage/ReportsPage';
 import DashboardPage from './page/DashboardPage/DashboardPage';
 
 
@@ -11,6 +12,7 @@ function App() {
     <>
   <AuthPage />
   <DashboardPage />
+  <ReportPage />
     </>
   )
 }
