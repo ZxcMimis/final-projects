@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './TransactionForm.scss';
 import { type TransactionFormProps } from './TransactionTable.types';
-import { type TransactionFormData } from './TransactionTable.types';
+// import { type TransactionFormData } from './TransactionTable.types';
 
 
 const DEFAULT_CATEGORIES = [

@@ -3,6 +3,11 @@ import './SummaryBoard.scss';
 import { type SummaryBoardProps} from './SummaryBoard.types';
 // import { type MonthSummary } from './SummaryBoard.types';
 
+export interface MonthSummary {
+  month: string; 
+  value: number;
+}
+
 const SummaryBoard: React.FC<SummaryBoardProps> = ({ months }) => {
   return (
     <div className="summary">

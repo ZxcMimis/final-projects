@@ -14,9 +14,8 @@ const Charts: React.FC<ChartsProps> = ({ data }) => {
   if (!data || data.length === 0) return null;
 
   const maxAmount = Math.max(...data.map(d => d.amount));
-  const chartHeight = 250; // Максимальная высота столбца в пикселях
+  const chartHeight = 250; 
 
-  // Создаем 5 уровней сетки (от максимума до нуля)
   const gridLines = Array.from({ length: 5 }).map((_, i) => 
     maxAmount - (maxAmount / 4) * i
   );
@@ -25,18 +24,16 @@ const Charts: React.FC<ChartsProps> = ({ data }) => {
     <div className="charts">
       <div className="charts__wrapper">
         
-        {/* Горизонтальная сетка */}
         <div className="charts__grid">
-          {gridLines.map((line, i) => (
+          {gridLines.map((_line, i) => (
             <div key={i} className="charts__grid-line"></div>
           ))}
         </div>
 
-        {/* Столбцы */}
+
         <div className="charts__bars">
           {data.map((item, index) => {
             const height = (item.amount / maxAmount) * chartHeight;
-            // Каждая третья колонка оранжевая, остальные светло-оранжевые
             const isOrange = index % 3 === 0; 
             
             return (
