@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import styles from './Auth.module.scss';
+import { useAuth } from '../../hooks/useAuth'; 
+import styles from './Login.module.scss';
 
 const loginSchema = z.object({
   email: z.string().min(1, "Це обов'язкове поле").email('Некоректний формат email'),
@@ -15,16 +17,28 @@ interface LoginFormProps {
 }
 
 export const LoginForm = ({ onSwitch }: LoginFormProps) => {
+  const { login } = useAuth();
+  
+  const [localError, setLocalError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting }
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginFormData) => {
-    console.log(data);
+  const onSubmit = async (data: LoginFormData) => {
+    setLocalError(null);
+    
+    const result = await login(data.email, data.password);
+    
+    if (!result.success) {
+      setLocalError(result.error || 'Сталася помилка під час входу');
+    } else {
+      console.log('Вхід успішний!');
+    }
   };
 
   return (
@@ -44,6 +58,12 @@ export const LoginForm = ({ onSwitch }: LoginFormProps) => {
         Або увійти за допомогою ел. пошти та<br /> паролю після реєстрації
       </p>
 
+      {localError && (
+        <div className={styles.errorText} style={{ textAlign: 'center', marginBottom: '10px' }}>
+          {localError}
+        </div>
+      )}
+
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
         <div className={styles.inputWrapper}>
           <label htmlFor="login-email" className={styles.label}>Електронна пошта:</label>
@@ -53,6 +73,7 @@ export const LoginForm = ({ onSwitch }: LoginFormProps) => {
             placeholder="your@email.com" 
             className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
             {...register('email')}
+            disabled={isSubmitting} 
           />
           {errors.email && <span className={styles.errorText}>{errors.email.message}</span>}
         </div>
@@ -65,18 +86,24 @@ export const LoginForm = ({ onSwitch }: LoginFormProps) => {
             placeholder="••••••••" 
             className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
             {...register('password')}
+            disabled={isSubmitting}
           />
           {errors.password && <span className={styles.errorText}>{errors.password.message}</span>}
         </div>
 
         <div className={styles.formActions}>
-          <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">
-            УВІЙТИ
+          <button 
+            className={`${styles.btn} ${styles.btnPrimary}`} 
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'ЗАВАНТАЖЕННЯ...' : 'УВІЙТИ'}
           </button>
           <button 
             className={`${styles.btn} ${styles.btnSecondary}`} 
             type="button" 
             onClick={onSwitch}
+            disabled={isSubmitting}
           >
             РЕЄСТРАЦІЯ
           </button>
