@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import './TransactionForm.scss';
 import { type TransactionFormProps } from './TransactionTable.types';
-// import { type TransactionFormData } from './TransactionTable.types';
-
 
 const DEFAULT_CATEGORIES = [
   'Продукти',
@@ -14,8 +12,16 @@ const DEFAULT_CATEGORIES = [
   'Інше',
 ];
 
+const getTodayFormatted = () => {
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const year = today.getFullYear();
+  return `${day}.${month}.${year}`;
+};
+
 const TransactionForm: React.FC<TransactionFormProps> = ({
-  currentDate = '21.11.2019',
+  currentDate = getTodayFormatted(),
   categories = DEFAULT_CATEGORIES,
   onSubmit,
   onClear,
@@ -27,7 +33,21 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   const handleSubmit = () => {
     const parsed = parseFloat(amount);
     if (!description.trim() || isNaN(parsed) || parsed <= 0) return;
-    onSubmit({ date: currentDate, description: description.trim(), category, amount: parsed });
+
+    // ВАЖЛИВО: Перетворюємо ДД.ММ.ГГГГ на РРРР-ММ-ДД для правильного збереження в БД
+    let dbDate = currentDate;
+    if (currentDate.includes('.')) {
+      const [day, month, year] = currentDate.split('.');
+      dbDate = `${year}-${month}-${day}`;
+    }
+
+    onSubmit({ 
+      date: dbDate, 
+      description: description.trim(), 
+      category, 
+      amount: parsed 
+    });
+    
     setDescription('');
     setCategory('');
     setAmount('');

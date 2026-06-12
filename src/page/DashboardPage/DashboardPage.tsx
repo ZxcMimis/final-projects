@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { supabase } from "../../services/supabaseClient";
 import { type RootState } from "../../store/store";
@@ -9,19 +9,13 @@ import Header from "../../components/Header/Header";
 import Balance from "../../components/Transactions/Balance/Balance";
 import TransactionForm from "../../components/Transactions/TransactionForm/TransactionForm";
 import TransactionTable from "../../components/Transactions/TransactionTable/TransactionTable";
-import SummaryBoard, {
-  type MonthSummary,
-} from "../../components/Transactions/SummaryBoard/SummaryBoard";
+import SummaryBoard from "../../components/Transactions/SummaryBoard/SummaryBoard";
 
 type TabType = "expense" | "income";
 
-const MONTH_SUMMARY: MonthSummary[] = [
-  { month: "ЛИСТОПАД", value: 10000 },
-  { month: "ЖОВТЕНЬ", value: 30000 },
-  { month: "ВЕРЕСЕНЬ", value: 30000 },
-  { month: "СЕРПЕНЬ", value: 20000 },
-  { month: "ЛИПЕНЬ", value: 15000 },
-  { month: "ЧЕРВЕНЬ", value: 18000 },
+const MONTHS_NAMES = [
+  "СІЧЕНЬ", "ЛЮТИЙ", "БЕРЕЗЕНЬ", "КВІТЕНЬ", "ТРАВЕНЬ", "ЧЕРВЕНЬ",
+  "ЛИПЕНЬ", "СЕРПЕНЬ", "ВЕРЕСЕНЬ", "ЖОВТЕНЬ", "ЛИСТОПАД", "ГРУДЕНЬ"
 ];
 
 const DashboardPage: React.FC = () => {
@@ -91,7 +85,54 @@ const DashboardPage: React.FC = () => {
 
   const handleClear = () => {};
 
-  const filtered = transactions.filter((t) => t.type === activeTab);
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+
+  const parseDate = (dateStr: string) => {
+    if (!dateStr) return new Date(NaN);
+    if (dateStr.includes('.')) {
+      const [day, month, year] = dateStr.split('.');
+      return new Date(`${year}-${month}-${day}`);
+    }
+    return new Date(dateStr);
+  };
+
+  // Оновлений фільтр: тепер він 100% пропустить твої дані для активної вкладки
+  const filtered = transactions.filter((t) => {
+    if (!t.date) return false;
+    // Фільтруємо записи за типом (Витрати або Доходи)
+    // Тимчасово прибрав жорстку перевірку поточного місяця, щоб ти точно бачив свої старі та нові дані
+    return t.type === activeTab;
+  });
+
+  const monthSummary = useMemo(() => {
+    return Array.from({ length: 6 }).map((_, index) => {
+      const date = new Date();
+      date.setMonth(date.getMonth() - index);
+      const m = date.getMonth();
+      const y = date.getFullYear();
+
+      const totalValue = transactions
+        .filter((t) => {
+          if (!t.date) return false;
+          const txDate = parseDate(t.date);
+          
+          if (isNaN(txDate.getTime())) return false;
+          
+          return (
+            t.type === activeTab &&
+            txDate.getMonth() === m &&
+            txDate.getFullYear() === y
+          );
+        })
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      return {
+        month: MONTHS_NAMES[m],
+        value: totalValue,
+      };
+    });
+  }, [transactions, activeTab]);
 
   return (
     <div className={styles.dashboard}>
@@ -132,8 +173,8 @@ const DashboardPage: React.FC = () => {
           />
 
           <div className={styles.content}>
-<TransactionTable transactions={filtered as any} onDelete={handleDelete} />
-            <SummaryBoard months={MONTH_SUMMARY} />
+            <TransactionTable transactions={filtered as any} onDelete={handleDelete} />
+            <SummaryBoard months={monthSummary} />
           </div>
         </div>
       </main>
