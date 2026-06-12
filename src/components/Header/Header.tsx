@@ -1,5 +1,10 @@
 import React from 'react';
 import styles from './Header.module.scss';
+import { supabase } from '../../services/supabaseClient';
+
+const handleLogout = async () => {
+  await supabase.auth.signOut();
+};
 
 interface HeaderProps {
   username?: string;
@@ -19,7 +24,7 @@ const Header: React.FC<HeaderProps> = ({ username = 'User Name', onLogout }) => 
         
         <div className={styles.header__divider}></div>
         
-        <button className={styles.header__logout} onClick={onLogout}>Вийти</button>
+        <button className={styles.header__logout} onClick={handleLogout}>Вийти</button>
       </div>
     </header>
   );

@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { supabase } from "../../services/supabaseClient";
+import { type RootState } from "../../store/store";
+import { fetchTransactions, addTransaction, deleteTransaction } from "../../store/transactionsSlice";
 import styles from "./DashboardPage.module.scss";
 
 import Header from "../../components/Header/Header";
 import Balance from "../../components/Transactions/Balance/Balance";
 import TransactionForm from "../../components/Transactions/TransactionForm/TransactionForm";
-import TransactionTable, {
-  type Transaction,
-} from "../../components/Transactions/TransactionTable/TransactionTable";
+import TransactionTable from "../../components/Transactions/TransactionTable/TransactionTable";
 import SummaryBoard, {
   type MonthSummary,
 } from "../../components/Transactions/SummaryBoard/SummaryBoard";
@@ -23,10 +25,30 @@ const MONTH_SUMMARY: MonthSummary[] = [
 ];
 
 const DashboardPage: React.FC = () => {
+  const dispatch = useDispatch<any>();
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { items: transactions } = useSelector((state: RootState) => state.transactions);
+
+  const [username, setUsername] = useState("");
   const [balance, setBalance] = useState(0);
   const [showTooltip, setShowTooltip] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>("expense");
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (user) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("username")
+          .eq("id", user.id)
+          .single();
+
+        if (data) setUsername(data.username);
+        dispatch(fetchTransactions(user.id));
+      }
+    };
+    fetchProfileData();
+  }, [user, dispatch]);
 
   const handleBalanceConfirm = (value: number) => {
     setBalance(value);
@@ -39,17 +61,21 @@ const DashboardPage: React.FC = () => {
     category: string;
     amount: number;
   }) => {
-    const newTxn: Transaction = {
-      id: String(Date.now()),
-      date: data.date,
-      description: data.description,
-      category: data.category,
-      amount: data.amount,
-      type: activeTab,
-    };
-    setTransactions((prev) => [newTxn, ...prev]);
+    if (!user) return;
+
+    dispatch(
+      addTransaction({
+        date: data.date,
+        description: data.description,
+        category: data.category,
+        amount: data.amount,
+        type: activeTab,
+        user_id: user.id,
+      })
+    );
+
     setBalance((prev) =>
-      activeTab === "income" ? prev + data.amount : prev - data.amount,
+      activeTab === "income" ? prev + data.amount : prev - data.amount
     );
   };
 
@@ -57,19 +83,19 @@ const DashboardPage: React.FC = () => {
     const txn = transactions.find((t) => t.id === id);
     if (txn) {
       setBalance((prev) =>
-        txn.type === "income" ? prev - txn.amount : prev + txn.amount,
+        txn.type === "income" ? prev - txn.amount : prev + txn.amount
       );
     }
-    setTransactions((prev) => prev.filter((t) => t.id !== id));
+    dispatch(deleteTransaction(id));
   };
 
-  const handleClear = () => setTransactions([]);
+  const handleClear = () => {};
 
   const filtered = transactions.filter((t) => t.type === activeTab);
 
   return (
     <div className={styles.dashboard}>
-      <Header username="User Name" />
+      <Header username={username || "User"} />
 
       <main className={styles.main}>
         <div className={styles.topbar}>
@@ -106,7 +132,7 @@ const DashboardPage: React.FC = () => {
           />
 
           <div className={styles.content}>
-            <TransactionTable transactions={filtered} onDelete={handleDelete} />
+<TransactionTable transactions={filtered as any} onDelete={handleDelete} />
             <SummaryBoard months={MONTH_SUMMARY} />
           </div>
         </div>

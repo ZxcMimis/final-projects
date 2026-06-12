@@ -1,10 +1,18 @@
 import { useState } from "react";
-import {LoginForm} from "../../components/Auth/LoginForm";
-import {RegisterForm} from "../../components/Auth/RegisterForm";
+import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { type RootState } from "../../store/store";
+import { LoginForm } from "../../components/Auth/LoginForm";
+import { RegisterForm } from "../../components/Auth/RegisterForm";
 import styles from "./AuthPage.module.scss";
 
 export const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  if (user) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className={styles.authPageContainer}>
