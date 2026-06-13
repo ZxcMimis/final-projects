@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useAuth } from '../../hooks/useAuth';
+import { supabase } from '../../services/supabaseClient';
 import styles from './RegisterForm.module.scss';
 
 const registerSchema = z.object({
@@ -38,7 +39,28 @@ export const RegisterForm = ({ onSwitch }: RegisterFormProps) => {
     if (!result.success) {
       setLocalError(result.error || 'Сталася помилка під час реєстрації');
     } else {
-      console.log('Реєстрація успішна!');
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        await supabase.auth.updateUser({
+          data: {
+            name: data.username,
+            username: data.username,
+            full_name: data.username,
+          }
+        });
+
+        const { error } = await supabase
+          .from('profiles')
+          .update({ username: data.username })
+          .eq('id', user.id);
+
+        if (error) {
+          await supabase
+            .from('profiles')
+            .insert({ id: user.id, username: data.username, balance: 0 });
+        }
+      }
     }
   };
 

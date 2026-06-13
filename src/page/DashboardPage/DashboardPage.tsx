@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { supabase } from "../../services/supabaseClient";
 import { type RootState } from "../../store/store";
@@ -20,33 +21,61 @@ const MONTHS_NAMES = [
 
 const DashboardPage: React.FC = () => {
   const dispatch = useDispatch<any>();
+  const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.auth);
   const { items: transactions } = useSelector((state: RootState) => state.transactions);
 
   const [username, setUsername] = useState("");
-  const [balance, setBalance] = useState(0);
-  const [showTooltip, setShowTooltip] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>("expense");
+  const [initialBalance, setInitialBalance] = useState<number>(() => {
+    const saved = localStorage.getItem("investiq_user_balance");
+    return saved ? parseFloat(saved) : 0;
+  });
+  const [showTooltip, setShowTooltip] = useState(() => {
+    const saved = localStorage.getItem("investiq_user_balance");
+    return !saved;
+  });
 
   useEffect(() => {
     const fetchProfileData = async () => {
       if (user) {
         const { data } = await supabase
           .from("profiles")
-          .select("username")
+          .select("username, balance")
           .eq("id", user.id)
           .single();
 
-        if (data) setUsername(data.username);
+        if (data) {
+          if (data.username) setUsername(data.username);
+          if (data.balance !== undefined && data.balance !== null) {
+            setInitialBalance(data.balance);
+            localStorage.setItem("investiq_user_balance", data.balance.toString());
+            setShowTooltip(false);
+          }
+        }
         dispatch(fetchTransactions(user.id));
       }
     };
     fetchProfileData();
   }, [user, dispatch]);
 
-  const handleBalanceConfirm = (value: number) => {
-    setBalance(value);
+  const calculatedBalance = useMemo(() => {
+    const txSum = transactions.reduce((acc, curr) => {
+      return curr.type === "income" ? acc + curr.amount : acc - curr.amount;
+    }, 0);
+    return initialBalance + txSum;
+  }, [transactions, initialBalance]);
+
+  const handleBalanceConfirm = async (value: number) => {
+    setInitialBalance(value);
+    localStorage.setItem("investiq_user_balance", value.toString());
     setShowTooltip(false);
+    if (user) {
+      await supabase
+        .from("profiles")
+        .update({ balance: value })
+        .eq("id", user.id);
+    }
   };
 
   const handleTransactionSubmit = (data: {
@@ -67,19 +96,9 @@ const DashboardPage: React.FC = () => {
         user_id: user.id,
       })
     );
-
-    setBalance((prev) =>
-      activeTab === "income" ? prev + data.amount : prev - data.amount
-    );
   };
 
   const handleDelete = (id: string) => {
-    const txn = transactions.find((t) => t.id === id);
-    if (txn) {
-      setBalance((prev) =>
-        txn.type === "income" ? prev - txn.amount : prev + txn.amount
-      );
-    }
     dispatch(deleteTransaction(id));
   };
 
@@ -89,7 +108,6 @@ const DashboardPage: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   const parseDate = (dateStr: string) => {
-    if (!dateStr) return new Date(NaN);
     if (dateStr.includes('.')) {
       const [day, month, year] = dateStr.split('.');
       return new Date(`${year}-${month}-${day}`);
@@ -97,13 +115,20 @@ const DashboardPage: React.FC = () => {
     return new Date(dateStr);
   };
 
-  // Оновлений фільтр: тепер він 100% пропустить твої дані для активної вкладки
   const filtered = transactions.filter((t) => {
     if (!t.date) return false;
-    // Фільтруємо записи за типом (Витрати або Доходи)
-    // Тимчасово прибрав жорстку перевірку поточного місяця, щоб ти точно бачив свої старі та нові дані
-    return t.type === activeTab;
+    const txDate = parseDate(t.date);
+    
+    if (isNaN(txDate.getTime())) return false;
+
+    return (
+      t.type === activeTab &&
+      txDate.getMonth() === currentMonth &&
+      txDate.getFullYear() === currentYear
+    );
   });
+
+  const displayName = username || user?.user_metadata?.name || user?.user_metadata?.full_name || user?.user_metadata?.username || user?.email?.split('@')[0] || "Користувач";
 
   const monthSummary = useMemo(() => {
     return Array.from({ length: 6 }).map((_, index) => {
@@ -136,17 +161,20 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div className={styles.dashboard}>
-      <Header username={username || "User"} />
+      <Header username={displayName} />
 
       <main className={styles.main}>
         <div className={styles.topbar}>
           <Balance
-            balance={balance}
+            balance={calculatedBalance}
             onConfirm={handleBalanceConfirm}
             showTooltip={showTooltip}
             onTooltipClose={() => setShowTooltip(false)}
           />
-          <button className={styles.reportsBtn}>
+          <button 
+            className={styles.reportsBtn}
+            onClick={() => navigate('/reports')}
+          >
             Перейти до розрахунків&nbsp;📊
           </button>
         </div>
