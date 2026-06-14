@@ -161,6 +161,9 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div className={styles.dashboard}>
+      <div className={styles.topBackgroundShape}></div>
+      <div className={styles.backgroundPattern}></div>
+
       <Header username={displayName} />
 
       <main className={styles.main}>

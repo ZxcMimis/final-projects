@@ -63,6 +63,7 @@ const ReportsPage: React.FC = () => {
     setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
   };
 
+  /* ВИПРАВЛЕНА ПОМИЛКА TYPESCRIPT */
   const parseDate = (dateStr: string) => {
     if (dateStr.includes('.')) {
       const [day, month, year] = dateStr.split('.');
@@ -138,7 +139,13 @@ const ReportsPage: React.FC = () => {
   const displayName = username || user?.user_metadata?.name || user?.user_metadata?.full_name || user?.user_metadata?.username || user?.email?.split('@')[0] || "Користувач";
 
   return (
-    <>
+    <div className="reports-layout">
+      {/* СІРИЙ ФОН ІЗ ЗАОКРУГЛЕННЯМ ЗВЕРХУ */}
+      <div className="top-background-shape"></div>
+      
+      {/* ПАТЕРН ІЗ КАРТИНКАМИ ЗНИЗУ */}
+      <div className="background-pattern"></div>
+
       <Header username={displayName} />
       
       <div className="reports-page">
@@ -194,7 +201,7 @@ const ReportsPage: React.FC = () => {
           
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -1,57 +1,125 @@
 @import '../../styles/variables';
 
-.authPageContainer {
-  display: flex;
-  min-height: 100vh;
-  background-color: $color-bg; 
-  /* Імітація вертикальних смуг з макету (можна прибрати, якщо будеш ставити картинку) */
-  background-image: repeating-linear-gradient(
-    to right,
-    transparent,
-    transparent 110px,
-    rgba(255, 255, 255, 0.4) 110px,
-    rgba(255, 255, 255, 0.4) 111px
-  );
-  font-family: $font-family-main;
-}
-
-.brandSection {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.authPage {
   position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f8fafe; 
+  display: flex;
+  flex-direction: column;
+  font-family: $font-family-main;
+  overflow: hidden;
 }
 
-.logoGroup {
+.backgroundPattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('../../assets/images/bg-login.jpg'); 
+  background-size: 100% auto;
+  background-position: top 80px center; 
+  background-repeat: no-repeat;
+  z-index: 0;
+  pointer-events: none; 
+}
+
+.header {
+  padding: 30px 50px;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 2;
+
+  .logoWrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+    
+    .logoPill {
+      position: absolute;
+      left: -10px;
+      width: 40px;
+      height: 24px;
+      background-color: #FF7628; 
+      border-radius: 12px;
+      z-index: 0;
+    }
+
+    .logoText {
+      font-weight: 800;
+      font-size: 14px;
+      color: #000;
+      z-index: 1;
+      letter-spacing: 0.05em;
+    }
+  }
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 50px;
+  box-sizing: border-box;
+  
+  @media (max-width: 900px) {
+    flex-direction: column;
+    padding: 40px 20px;
+    gap: 60px;
+  }
+}
+.leftBox {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: -50px; 
+  justify-content: center;
+
+  .title {
+    font-size: 80px; 
+    font-weight: 900;
+    color: #000;
+    margin: 0;
+    text-align: center;
+    line-height: 1;
+    letter-spacing: -0.02em;
+
+    .subtitle {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.4em;
+      color: #7a829a; 
+      margin-top: 15px;
+      text-transform: uppercase;
+    }
+  }
+
+  .illustrationBox {
+    position: absolute;
+    bottom: 30px;
+    left: 50px;
+    width: 198px;
+    height: 158px;
+    background-image: url('../../assets/images/subBG-login.jpg');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
 }
 
-.mainTitle {
-  font-size: 78px;
-  font-weight: 900;
-  color: $color-text-black;
-  margin: 0;
-  line-height: 1;
-  letter-spacing: 0.02em;
-}
-
-.subTitle {
-  font-size: 16px;
-  font-weight: 700;
-  color: $color-text-main;
-  letter-spacing: 0.22em; 
-  margin: 10px 0 0 0;
-  text-transform: uppercase;
-}
-
-.formSection {
+.rightBox {
   flex: 1;
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 20px;
+  align-items: center;
+  width: 100%;
 }
