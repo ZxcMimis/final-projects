@@ -17,7 +17,12 @@
     display: flex;
     align-items: center;
     padding-left: 12px; 
+    cursor: pointer;
+    transition: transform $transition;
 
+    &:hover {
+      transform: scale(1.02);
+    }
 
     &::before {
       content: '';
@@ -80,11 +85,10 @@
     font-weight: 500;
   }
 
-  // Вертикальная линия разделителя
   &__divider {
     width: 1px;
     height: 24px;
-    background-color: #e0e5eb;
+    background-color: $color-border;
   }
 
   &__logout {
@@ -95,10 +99,78 @@
     font-weight: 500;
     padding: 0;
     cursor: pointer;
-    transition: color 0.3s ease;
+    transition: color $transition;
 
     &:hover {
       color: $color-primary;
     }
   }
+}
+
+.notificationOverlay {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 10000;
+  pointer-events: none; 
+}
+
+.notificationBox {
+  background: $color-white;
+  box-shadow: $shadow-card;
+  border-radius: $radius-btn;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: $color-text-main;
+  position: relative;
+  overflow: hidden;
+  pointer-events: auto; 
+  animation: 
+    slideInFromRight 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards,
+    slideOutToRight 0.5s cubic-bezier(0.25, 1, 0.5, 1) 3s forwards;
+}
+
+
+.text {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.03em;
+  font-family: $font-family-main;
+}
+
+.progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: $color-primary; 
+  animation: progressShrink 3s linear forwards;
+}
+
+@keyframes slideInFromRight {
+  0% { transform: translateX(120%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOutToRight {
+  0% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(130%); opacity: 0; }
+}
+
+@keyframes waveHand {
+  0% { transform: rotate(0deg); }
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  30% { transform: rotate(14deg); }
+  40% { transform: rotate(-4deg); }
+  50% { transform: rotate(10deg); }
+  60%, 100% { transform: rotate(0deg); }
+}
+
+@keyframes progressShrink {
+  0% { width: 100%; }
+  100% { width: 0%; }
 }

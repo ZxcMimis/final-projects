@@ -5,10 +5,20 @@
   flex-shrink: 0;
   border-left: 1px solid $color-border;
 
+  @media (max-width: 1199px) {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid $color-border;
+  }
+
   &__head {
     padding: 10px 18px;
     background: $color-bg;
     border-bottom: 1px solid $color-border;
+
+    @media (max-width: 767px) {
+      padding: 8px 14px;
+    }
   }
 
   &__title {
@@ -33,6 +43,10 @@
 
     &:hover {
       background: rgba($color-orange, 0.04);
+    }
+
+    @media (max-width: 767px) {
+      padding: 9px 14px;
     }
   }
 

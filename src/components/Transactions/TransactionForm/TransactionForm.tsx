@@ -30,11 +30,22 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
 
-  const handleSubmit = () => {
+  const handleClear = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    
+    setDescription('');
+    setCategory('');
+    setAmount('');
+    
+    if (onClear) onClear();
+  };
+
+  const handleSubmit = (e?: React.MouseEvent | React.KeyboardEvent) => {
+    if (e) e.preventDefault();
     const parsed = parseFloat(amount);
+    
     if (!description.trim() || isNaN(parsed) || parsed <= 0) return;
 
-    // ВАЖЛИВО: Перетворюємо ДД.ММ.ГГГГ на РРРР-ММ-ДД для правильного збереження в БД
     let dbDate = currentDate;
     if (currentDate.includes('.')) {
       const [day, month, year] = currentDate.split('.');
@@ -48,9 +59,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       amount: parsed 
     });
     
-    setDescription('');
-    setCategory('');
-    setAmount('');
+    handleClear();
   };
 
   return (
@@ -67,7 +76,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           placeholder="Опис товару"
           value={description}
           onChange={e => setDescription(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+          onKeyDown={e => e.key === 'Enter' && handleSubmit(e)}
         />
 
         <div className="txn-form__sep" />
@@ -95,16 +104,21 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             placeholder="0,00"
             value={amount}
             onChange={e => setAmount(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+            onKeyDown={e => e.key === 'Enter' && handleSubmit(e)}
           />
           <span className="txn-form__calc">🖩</span>
         </div>
       </div>
 
-      <button className="txn-form__submit" onClick={handleSubmit}>
+      <button type="button" className="txn-form__submit" onClick={handleSubmit}>
         ВВЕСТИ
       </button>
-      <button className="txn-form__clear" onClick={onClear}>
+      
+      <button 
+        type="button" 
+        className="txn-form__clear" 
+        onClick={handleClear}
+      >
         ОЧИСТИТИ
       </button>
     </div>
