@@ -7,12 +7,20 @@
     font-size: 12px;
     color: rgba(82, 85, 95, 0.7);
     margin-bottom: 5px;
+
+    @media (max-width: 767px) {
+      font-size: 11px;
+    }
   }
 
   &__controls {
     display: flex;
     align-items: center;
     gap: 15px;
+
+    @media (max-width: 767px) {
+      gap: 10px;
+    }
   }
 
   &__date {
@@ -22,6 +30,11 @@
     text-transform: uppercase;
     width: 120px;
     text-align: center;
+
+    @media (max-width: 767px) {
+      font-size: 13px;
+      width: 100px;
+    }
   }
 
   &__arrow {

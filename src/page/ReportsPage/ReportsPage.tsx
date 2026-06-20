@@ -63,7 +63,6 @@ const ReportsPage: React.FC = () => {
     setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
   };
 
-  /* ВИПРАВЛЕНА ПОМИЛКА TYPESCRIPT */
   const parseDate = (dateStr: string) => {
     if (dateStr.includes('.')) {
       const [day, month, year] = dateStr.split('.');
@@ -121,12 +120,9 @@ const ReportsPage: React.FC = () => {
   }, [categoryItems, activeTab, activeCategoryId]);
 
   const chartData = useMemo(() => {
-    if (!activeCategoryId) return [];
-    
-    const categoryTxns = currentTabTransactions.filter(t => (t.category || 'Інше') === activeCategoryId);
     const groups: Record<string, number> = {};
     
-    categoryTxns.forEach(t => {
+    currentTabTransactions.forEach(t => {
       const desc = t.description || 'Без опису';
       groups[desc] = (groups[desc] || 0) + t.amount;
     });
@@ -134,16 +130,13 @@ const ReportsPage: React.FC = () => {
     return Object.entries(groups)
       .map(([label, amount]) => ({ label, amount }))
       .sort((a, b) => b.amount - a.amount);
-  }, [currentTabTransactions, activeCategoryId]);
+  }, [currentTabTransactions]);
 
   const displayName = username || user?.user_metadata?.name || user?.user_metadata?.full_name || user?.user_metadata?.username || user?.email?.split('@')[0] || "Користувач";
 
   return (
     <div className="reports-layout">
-      {/* СІРИЙ ФОН ІЗ ЗАОКРУГЛЕННЯМ ЗВЕРХУ */}
       <div className="top-background-shape"></div>
-      
-      {/* ПАТЕРН ІЗ КАРТИНКАМИ ЗНИЗУ */}
       <div className="background-pattern"></div>
 
       <Header username={displayName} />

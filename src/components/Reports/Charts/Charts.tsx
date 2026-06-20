@@ -30,10 +30,10 @@ const Charts: React.FC<ChartsProps> = ({ data }) => {
           ))}
         </div>
 
-
         <div className="charts__bars">
           {data.map((item, index) => {
             const height = (item.amount / maxAmount) * chartHeight;
+            const percent = Math.max((item.amount / maxAmount) * 100, 2);
             const isOrange = index % 3 === 0; 
             
             return (
@@ -43,7 +43,7 @@ const Charts: React.FC<ChartsProps> = ({ data }) => {
                 </span>
                 <div
                   className={`charts__bar ${isOrange ? 'charts__bar--orange' : 'charts__bar--pale'}`}
-                  style={{ height: `${height}px` }}
+                  style={{ height: `${height}px`, width: `${percent}%` }}
                 ></div>
                 <span className="charts__bar-label">{item.label}</span>
               </div>
