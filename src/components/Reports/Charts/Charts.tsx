@@ -13,8 +13,8 @@ interface ChartsProps {
 const Charts: React.FC<ChartsProps> = ({ data }) => {
   if (!data || data.length === 0) return null;
 
-  const maxAmount = Math.max(...data.map(d => d.amount));
-  const chartHeight = 250; 
+const maxAmount = Math.max(...data.map(d => d.amount));
+  const chartHeight = 180; 
 
   const gridLines = Array.from({ length: 5 }).map((_, i) => 
     maxAmount - (maxAmount / 4) * i
